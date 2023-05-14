@@ -10,6 +10,8 @@ async function executeQuery(query) {
 
   const [results, fields] = await connection.execute(query);
 
+  connection.close();
+  
   return results;
 }
 
