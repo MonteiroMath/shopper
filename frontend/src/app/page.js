@@ -1,6 +1,7 @@
 "use client";
 import styles from "./page.module.css";
-import { useRef, useState } from "react";
+import { useState } from "react";
+import api from "@/api/api";
 
 const APP_STATUS = {
   IDLE: "IDLE",
@@ -8,9 +9,11 @@ const APP_STATUS = {
   FILE_ERROR: "FILE_ERROR",
   FILE_READY: "FILE_READY",
   VALIDATING: "VALIDATING",
+  VALIDATION_READY: "VALIDATION_READY",
 };
 export default function Home() {
-  const [filecontents, setFileContents] = useState({});
+  const [fileContents, setFileContents] = useState({});
+  const [products, setProducts] = useState([]);
 
   const [appStatus, setAppStatus] = useState(APP_STATUS.IDLE);
 
@@ -27,7 +30,7 @@ export default function Home() {
     content.pop();
 
     content = content.map((row) => row.split(","));
-    console.log(content);
+
     setAppStatus(APP_STATUS.READING_FILE);
     processFile(content);
   }
@@ -39,7 +42,6 @@ export default function Home() {
       fileContent.forEach((row, index) => {
         if (index === 0) return;
 
-        console.log(row);
         if (
           row.length != 2 ||
           !isNumeric(row[0]) ||
@@ -64,12 +66,32 @@ export default function Home() {
 
   function handleValidation() {
     setAppStatus(APP_STATUS.VALIDATING);
-    //make req to be
+
+    api.validate({ new_prices: fileContents }).then(({ products }) => {
+      setAppStatus(APP_STATUS.VALIDATION_READY);
+      setProducts(products);
+    });
   }
 
   function handleUpdate() {
     return;
   }
+
+  const productCards = products.map((product, key) => {
+    const errors = product.validation_errors.map((error, key) => {
+      return <div key={`error-${key}`}>{error}</div>;
+    });
+
+    return (
+      <div key={key}>
+        <div>{product.id}</div>
+        <div>{product.name}</div>
+        <div>{product.current_price}</div>
+        <div>{product.new_price}</div>
+        <div>{errors}</div>
+      </div>
+    );
+  });
 
   return (
     <main className={styles.main}>
@@ -95,6 +117,7 @@ export default function Home() {
       {appStatus === APP_STATUS.VALIDATING && (
         <div>Aguarde enquanto validamos os preços informados.</div>
       )}
+      {appStatus === APP_STATUS.VALIDATION_READY && <div>{productCards}</div>}
       <div>
         <button
           disabled={appStatus !== APP_STATUS.FILE_READY}

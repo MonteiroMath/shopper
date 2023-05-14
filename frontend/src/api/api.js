@@ -1,4 +1,4 @@
-export async function client(endpoint, method, body) {
+export default async function api(endpoint, method, body) {
   const baseUrl = "http://localhost:3000";
   const headers = { "Content-Type": "application/json" };
   const mode = "cors";
@@ -19,10 +19,10 @@ export async function client(endpoint, method, body) {
   return data;
 }
 
-client.validate = async function (body) {
-  return client("/validate", "POST", body);
+api.validate = async function (body) {
+  return api("/validate", "POST", body);
 };
 
-client.update = async function (body) {
-  return client("/update", "PUT", body);
+api.update = async function (body) {
+  return api("/update", "PUT", body);
 };
