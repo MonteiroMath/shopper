@@ -21,15 +21,44 @@ export default function Home() {
 
   function handleFileReading(reader) {
     let content = reader.result;
-    content = content.split("\n");
-    content = content.map((row) => row.split(","));
 
+    content = content.split("\n");
+    content.pop();
+
+    content = content.map((row) => row.split(","));
+    console.log(content);
     setAppStatus(APP_STATUS.READING_FILE);
-    proccessFile(fileContent);
+    processFile(content);
   }
 
-  function proccessFile(fileContent) {
-    return;
+  function processFile(fileContent) {
+    const fileObj = {};
+
+    try {
+      fileContent.forEach((row, index) => {
+        if (index === 0) return;
+
+        console.log(row);
+        if (
+          row.length != 2 ||
+          !isNumeric(row[0]) ||
+          !isNumeric(row[1]) ||
+          parseFloat(row[1]) < 0
+        ) {
+          throw new Error("Invalid file");
+        }
+
+        const code = row[0];
+        const new_price = row[1];
+
+        fileObj[code] = new_price;
+      });
+
+      setFileContents(fileObj);
+      setAppStatus(APP_STATUS.FILE_READY);
+    } catch (error) {
+      setAppStatus(APP_STATUS.FILE_ERROR);
+    }
   }
 
   return (
@@ -54,9 +83,19 @@ export default function Home() {
         <div>O arquivo está pronto. Clique em validar.</div>
       )}
       <div>
-        <button disabled={appStatus !== APP_STATUS.FILE_READY}>Validar</button>
-        <button>Atualizar</button>
+        <button
+          disabled={appStatus !== APP_STATUS.FILE_READY}
+          onClick={handleValidation}
+        >
+          Validar
+        </button>
+        <button onClick={handleUpdate}>Atualizar</button>
       </div>
     </main>
   );
+}
+
+function isNumeric(str) {
+  if (typeof str != "string") return false;
+  return !isNaN(str) && !isNaN(parseFloat(str));
 }
