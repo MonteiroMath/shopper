@@ -26,6 +26,10 @@ class Product {
 
     return Promise.all([productPromise, productComponentsPromise]).then(
       ([product, productComponents]) => {
+        if (product.length === 0) {
+          throw new Error(`Produto de id ${id} não encontrado`);
+        }
+
         const { code, name, cost_price, sales_price } = product[0];
         return new Product(
           code,

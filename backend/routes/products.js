@@ -14,17 +14,28 @@ router.post("/validate", function (req, res, next) {
   const validationPromises = [];
 
   for (const [productId, newPrice] of Object.entries(new_prices)) {
-    const validationPromise = Product.getData(productId).then((product) => {
-      const validation_result = product.validate(newPrice, new_prices);
-      return {
-        id: product.id,
-        name: product.name,
-        current_price: product.sales_price,
-        new_price: newPrice,
-        new_cost_price: this.newCostPrice,
-        validation_errors: validation_result,
-      };
-    });
+    const validationPromise = Product.getData(productId)
+      .then((product) => {
+        const validation_result = product.validate(newPrice, new_prices);
+        return {
+          id: product.id,
+          name: product.name,
+          current_price: product.sales_price,
+          new_price: newPrice,
+          new_cost_price: this.newCostPrice,
+          validation_errors: validation_result,
+        };
+      })
+      .catch((err) => {
+        return {
+          id: productId,
+          name: null,
+          current_price: null,
+          new_price: null,
+          new_cost_price: null,
+          validation_errors: [err.message],
+        };
+      });
 
     validationPromises.push(validationPromise);
   }
