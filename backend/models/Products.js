@@ -26,7 +26,7 @@ class Product {
     return;
   }
 
-  validate(newPrice, pack_components_prices = null) {
+  validate(newPrice, new_prices) {
     /*
         Deffers work to other methods to make full validation, then consolidate the results.
         return object of formati {valid: bool, err_msgs: []}
@@ -86,3 +86,5 @@ class Product {
       );
   }
 }
+
+module.exports = Product;
