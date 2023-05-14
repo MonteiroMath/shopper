@@ -32,7 +32,29 @@ router.post("/validate", function (req, res, next) {
 });
 
 router.put("/update", function (req, res, next) {
-  res.json("Update endpoint");
+  const { new_prices } = req.body;
+
+  if (!new_prices) {
+    throw new Error(
+      "É necessário encaminhar uma lista de preços para validação."
+    );
+  }
+
+  const updatePromises = [];
+
+  for (const [productId, productProps] of Object.entries(new_prices)) {
+    console.log(productProps);
+    const updatePromise = Product.setData(
+      productId,
+      productProps.newPrice,
+      productProps.costPrice
+    );
+    updatePromises.push(updatePromise);
+  }
+
+  Promise.all(updatePromises).then(() => {
+    res.json({ success: true });
+  });
 });
 
 module.exports = router;
