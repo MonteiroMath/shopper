@@ -1,95 +1,62 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
+import styles from "./page.module.css";
+import { useRef, useState } from "react";
 
+const APP_STATUS = {
+  IDLE: "IDLE",
+  READING_FILE: "READING_FILE",
+  FILE_ERROR: "FILE_ERROR",
+  FILE_READY: "FILE_READY",
+};
 export default function Home() {
+  const [filecontents, setFileContents] = useState({});
+
+  const [appStatus, setAppStatus] = useState(APP_STATUS.IDLE);
+
+  function handleFileLoading(file) {
+    let fileReader = new FileReader();
+    fileReader.onloadend = () => handleFileReading(fileReader);
+    fileReader.readAsText(file);
+  }
+
+  function handleFileReading(reader) {
+    let content = reader.result;
+    content = content.split("\n");
+    content = content.map((row) => row.split(","));
+
+    setAppStatus(APP_STATUS.READING_FILE);
+    proccessFile(fileContent);
+  }
+
+  function proccessFile(fileContent) {
+    return;
+  }
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
+      <h1>SHOPPER</h1>
+      <input
+        type="file"
+        accept=".csv"
+        onChange={(event) => handleFileLoading(event.target.files[0])}
+      />
+      {appStatus === APP_STATUS.IDLE && <div>Selecione um arquivo CSV.</div>}
+      {appStatus === APP_STATUS.READING_FILE && (
+        <div>Aguarde enquanto processamos o arquivo.</div>
+      )}
+      {appStatus === APP_STATUS.FILE_ERROR && (
         <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+          Foi encontrado um erro. Certifique-se de que o arquivo adere às regras
+          estabelecidas.
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      )}
+      {appStatus === APP_STATUS.FILE_READY && (
+        <div>O arquivo está pronto. Clique em validar.</div>
+      )}
+      <div>
+        <button disabled={appStatus !== APP_STATUS.FILE_READY}>Validar</button>
+        <button>Atualizar</button>
       </div>
     </main>
-  )
+  );
 }
