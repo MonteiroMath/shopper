@@ -7,6 +7,7 @@ const APP_STATUS = {
   READING_FILE: "READING_FILE",
   FILE_ERROR: "FILE_ERROR",
   FILE_READY: "FILE_READY",
+  VALIDATING: "VALIDATING",
 };
 export default function Home() {
   const [filecontents, setFileContents] = useState({});
@@ -51,7 +52,7 @@ export default function Home() {
         const code = row[0];
         const new_price = row[1];
 
-        fileObj[code] = new_price;
+        fileObj[code] = parseFloat(new_price);
       });
 
       setFileContents(fileObj);
@@ -59,6 +60,15 @@ export default function Home() {
     } catch (error) {
       setAppStatus(APP_STATUS.FILE_ERROR);
     }
+  }
+
+  function handleValidation() {
+    setAppStatus(APP_STATUS.VALIDATING);
+    //make req to be
+  }
+
+  function handleUpdate() {
+    return;
   }
 
   return (
@@ -81,6 +91,9 @@ export default function Home() {
       )}
       {appStatus === APP_STATUS.FILE_READY && (
         <div>O arquivo está pronto. Clique em validar.</div>
+      )}
+      {appStatus === APP_STATUS.VALIDATING && (
+        <div>Aguarde enquanto validamos os preços informados.</div>
       )}
       <div>
         <button
