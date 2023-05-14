@@ -42,7 +42,12 @@ class Product {
         - set the new price of product ID
         - if newCostPrice is present, also sets the cost price
     */
-    return;
+
+    const query = newCostPrice
+      ? `UPDATE products SET sales_price=${newPrice}, cost_price=${newPrice} WHERE code=${id}`
+      : `UPDATE products SET sales_price=${newPrice} WHERE code=${id}`;
+
+    return db.executeQuery(query);
   }
 
   validate(newPrice, new_prices) {
