@@ -5,6 +5,7 @@ class Product {
     this.cost_price = cost_price;
     this.sales_price = sales_price;
     this.pack_components = pack_components;
+    this.validation_errors = [];
   }
 
   static async getData(id) {
@@ -31,27 +32,21 @@ class Product {
         return object of formati {valid: bool, err_msgs: []}
     */
 
-    const err_msgs = [];
+    this.validatePriceVersusCost(newPrice);
+    this.validatePriceVariation(newPrice);
 
-    const costValidation = this.validatePriceVersusCost(newPrice);
-    costValidation && err_msgs.push(costValidation);
+    if (this.pack_components.length > 0) {
+      this.validatePriceOfPackComponents(newPrice, pack_components_prices);
+    }
 
-    const variationValidation = this.validatePriceVariation(newPrice);
-    variationValidation && err_msgs.push(variationValidation);
-
-    const packValidation = this.validatePriceOfPackComponents(
-      newPrice,
-      pack_components_prices
-    );
+    return this.validation_errors;
   }
 
   validatePriceVersusCost(newPrice) {
     //verifies if new price is bigger than cost_price
 
-    if (newPrice < this.cost_price)
-      return "Preço de venda inferior ao preço de custo";
-
-    return false;
+    newPrice < this.cost_price &&
+      this.validation_errors.push("Preço de venda inferior ao preço de custo");
   }
 
   validatePriceVariation(newPrice) {
@@ -60,16 +55,34 @@ class Product {
     const priceVariation = newPrice / this.sales_price - 1;
 
     if (priceVariation > 0.1)
-      return "Preço de venda aumentou mais do que que 10%.";
+      return this.validation_errors.push(
+        "Preço de venda aumentou mais do que que 10%."
+      );
 
     if (-1 * priceVariation > 0.1)
-      return "Preço de venda diminuiu mais do que que 10%.";
-
-    return false;
+      return this.validation_errors.push(
+        "Preço de venda diminuiu mais do que que 10%."
+      );
   }
 
-  validadePriceOfPackComponents(newPrice, pack_components_prices) {
+  validadePriceOfPackComponents(newPrice, new_prices) {
     //verifies if pack_components_prices are valid
-    return;
+
+    let totalPrice = 0;
+
+    for (component in this.pack_components) {
+      if (!new_prices.hasOwn(component.id)) {
+        this.validation_errors.push(
+          `Não foi informado valor para atualização do componente ${componnet.id}`
+        );
+      } else {
+        totalPrice += new_prices[component.id] * component.quantity;
+      }
+    }
+
+    if (totalPrice !== newPrice)
+      this.validation_errors.push(
+        "O valor total do pacote não é coerente com o valor de seus componentes"
+      );
   }
 }
