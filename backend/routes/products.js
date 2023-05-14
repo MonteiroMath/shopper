@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-var Product = require("../Products.js");
+var Product = require("../models/Products");
 
 router.post("/validate", function (req, res, next) {
   const { new_prices } = req.body;

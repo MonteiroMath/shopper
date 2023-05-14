@@ -1,6 +1,8 @@
+const db = require("../db/db");
+
 class Product {
-  constructor(code, name, cost_price, sales_price, pack_components) {
-    this.code = code;
+  constructor(id, name, cost_price, sales_price, pack_components) {
+    this.id = id;
     this.name = name;
     this.cost_price = cost_price;
     this.sales_price = sales_price;
@@ -15,7 +17,24 @@ class Product {
         - return new Product object with data used
     */
 
-    return;
+    const productQuery = `SELECT * FROM products WHERE code=${id}`;
+    const productComponentsQuery = `SELECT product_id as id, qty FROM packs WHERE pack_id=${id}`;
+
+    const productPromise = db.executeQuery(productQuery);
+    const productComponentsPromise = db.executeQuery(productComponentsQuery);
+
+    return Promise.all([productPromise, productComponentsPromise]).then(
+      ([product, productComponents]) => {
+        const { code, name, cost_price, sales_price } = product[0];
+        return new Product(
+          code,
+          name,
+          cost_price,
+          sales_price,
+          productComponents
+        );
+      }
+    );
   }
 
   static async setData(id, newPrice, newCostPrice = null) {
@@ -36,7 +55,7 @@ class Product {
     this.validatePriceVariation(newPrice);
 
     if (this.pack_components.length > 0) {
-      this.validatePriceOfPackComponents(newPrice, pack_components_prices);
+      this.validatePriceOfPackComponents(newPrice, new_prices);
     }
 
     return this.validation_errors;
@@ -65,20 +84,20 @@ class Product {
       );
   }
 
-  validadePriceOfPackComponents(newPrice, new_prices) {
+  validatePriceOfPackComponents(newPrice, new_prices) {
     //verifies if pack_components_prices are valid
 
     let totalPrice = 0;
 
-    for (component in this.pack_components) {
-      if (!new_prices.hasOwn(component.id)) {
+    this.pack_components.forEach((component) => {
+      if (!Object.hasOwn(new_prices, component.id)) {
         this.validation_errors.push(
-          `Não foi informado valor para atualização do componente ${componnet.id}`
+          `Não foi informado valor para atualização do componente ${component.id}`
         );
       } else {
-        totalPrice += new_prices[component.id] * component.quantity;
+        totalPrice += new_prices[component.id] * component.qty;
       }
-    }
+    });
 
     if (totalPrice !== newPrice)
       this.validation_errors.push(
