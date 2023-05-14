@@ -7,6 +7,7 @@ class Product {
     this.cost_price = cost_price;
     this.sales_price = sales_price;
     this.pack_components = pack_components;
+    this.new_cost_price = null;
     this.validation_errors = [];
   }
 
@@ -104,10 +105,13 @@ class Product {
       }
     });
 
-    if (totalPrice !== newPrice)
+    if (totalPrice !== newPrice) {
       this.validation_errors.push(
         "O valor total do pacote não é coerente com o valor de seus componentes"
       );
+    } else {
+      this.new_cost_price = totalPrice;
+    }
   }
 }
 
