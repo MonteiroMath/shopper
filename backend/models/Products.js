@@ -30,17 +30,42 @@ class Product {
         Deffers work to other methods to make full validation, then consolidate the results.
         return object of formati {valid: bool, err_msgs: []}
     */
-    return {};
+
+    const err_msgs = [];
+
+    const costValidation = this.validatePriceVersusCost(newPrice);
+    costValidation && err_msgs.push(costValidation);
+
+    const variationValidation = this.validatePriceVariation(newPrice);
+    variationValidation && err_msgs.push(variationValidation);
+
+    const packValidation = this.validatePriceOfPackComponents(
+      newPrice,
+      pack_components_prices
+    );
   }
 
   validatePriceVersusCost(newPrice) {
     //verifies if new price is bigger than cost_price
-    return;
+
+    if (newPrice < this.cost_price)
+      return "Preço de venda inferior ao preço de custo";
+
+    return false;
   }
 
   validatePriceVariation(newPrice) {
     //vefiries if price variation is within 10% size
-    return;
+
+    const priceVariation = newPrice / this.sales_price - 1;
+
+    if (priceVariation > 0.1)
+      return "Preço de venda aumentou mais do que que 10%.";
+
+    if (-1 * priceVariation > 0.1)
+      return "Preço de venda diminuiu mais do que que 10%.";
+
+    return false;
   }
 
   validadePriceOfPackComponents(newPrice, pack_components_prices) {
