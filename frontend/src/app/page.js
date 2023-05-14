@@ -1,6 +1,7 @@
 "use client";
 import styles from "./page.module.css";
 import { useState } from "react";
+
 import api from "@/api/api";
 
 const APP_STATUS = {
@@ -10,10 +11,13 @@ const APP_STATUS = {
   FILE_READY: "FILE_READY",
   VALIDATING: "VALIDATING",
   VALIDATION_READY: "VALIDATION_READY",
+  UPDATING: "UPDATING",
+  DONE: "DONE",
 };
 export default function Home() {
   const [fileContents, setFileContents] = useState({});
   const [products, setProducts] = useState([]);
+  const [allValid, setAllValid] = useState(false);
 
   const [appStatus, setAppStatus] = useState(APP_STATUS.IDLE);
 
@@ -70,11 +74,29 @@ export default function Home() {
     api.validate({ new_prices: fileContents }).then(({ products }) => {
       setAppStatus(APP_STATUS.VALIDATION_READY);
       setProducts(products);
+
+      setAllValid(!products.some((product) => !product.valid));
     });
   }
 
   function handleUpdate() {
-    return;
+    setAppStatus(APP_STATUS.UPDATING);
+
+    const queryBody = {
+      new_prices: products.map((product) => {
+        return {
+          id: product.id,
+          new_price: product.new_price,
+          new_cost_price: product.new_cost_price,
+        };
+      }),
+    };
+
+    api.update(queryBody).then((result) => {
+      setAppStatus(APP_STATUS.DONE);
+      window.alert("Os preços foram atualizados.");
+      window.location.reload();
+    });
   }
 
   const productCards = products.map((product, key) => {
@@ -125,7 +147,9 @@ export default function Home() {
         >
           Validar
         </button>
-        <button onClick={handleUpdate}>Atualizar</button>
+        <button disabled={!allValid} onClick={handleUpdate}>
+          Atualizar
+        </button>
       </div>
     </main>
   );

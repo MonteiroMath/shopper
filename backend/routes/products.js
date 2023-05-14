@@ -24,6 +24,7 @@ router.post("/validate", function (req, res, next) {
           new_price: newPrice,
           new_cost_price: this.newCostPrice,
           validation_errors: validation_result,
+          valid: validation_result.length === 0,
         };
       })
       .catch((err) => {
@@ -34,6 +35,7 @@ router.post("/validate", function (req, res, next) {
           new_price: null,
           new_cost_price: null,
           validation_errors: [err.message],
+          valid: false,
         };
       });
 
@@ -46,6 +48,8 @@ router.post("/validate", function (req, res, next) {
 router.put("/update", function (req, res, next) {
   const { new_prices } = req.body;
 
+  console.log(new_prices);
+
   if (!new_prices) {
     throw new Error(
       "É necessário encaminhar uma lista de preços para validação."
@@ -54,12 +58,12 @@ router.put("/update", function (req, res, next) {
 
   const updatePromises = [];
 
-  for (const [productId, productProps] of Object.entries(new_prices)) {
-    console.log(productProps);
+  for (const product of new_prices) {
+    console.log(product);
     const updatePromise = Product.setData(
-      productId,
-      productProps.newPrice,
-      productProps.costPrice
+      product.id,
+      product.new_price,
+      product.new_cost_price
     );
     updatePromises.push(updatePromise);
   }
