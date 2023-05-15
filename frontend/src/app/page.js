@@ -3,70 +3,16 @@ import styles from "./page.module.css";
 import { useState } from "react";
 
 import api from "@/api/api";
+import APP_STATUS from "@/app_status";
 
-const APP_STATUS = {
-  IDLE: "IDLE",
-  READING_FILE: "READING_FILE",
-  FILE_ERROR: "FILE_ERROR",
-  FILE_READY: "FILE_READY",
-  VALIDATING: "VALIDATING",
-  VALIDATION_READY: "VALIDATION_READY",
-  UPDATING: "UPDATING",
-  DONE: "DONE",
-};
+import FilePicker from "@/FilePicker/FilePicker";
+
 export default function Home() {
   const [fileContents, setFileContents] = useState({});
   const [products, setProducts] = useState([]);
   const [allValid, setAllValid] = useState(false);
 
   const [appStatus, setAppStatus] = useState(APP_STATUS.IDLE);
-
-  function handleFileLoading(file) {
-    let fileReader = new FileReader();
-    fileReader.onloadend = () => handleFileReading(fileReader);
-    fileReader.readAsText(file);
-  }
-
-  function handleFileReading(reader) {
-    let content = reader.result;
-
-    content = content.split("\n");
-    content.pop();
-
-    content = content.map((row) => row.split(","));
-
-    setAppStatus(APP_STATUS.READING_FILE);
-    processFile(content);
-  }
-
-  function processFile(fileContent) {
-    const fileObj = {};
-
-    try {
-      fileContent.forEach((row, index) => {
-        if (index === 0) return;
-
-        if (
-          row.length != 2 ||
-          !isNumeric(row[0]) ||
-          !isNumeric(row[1]) ||
-          parseFloat(row[1]) < 0
-        ) {
-          throw new Error("Invalid file");
-        }
-
-        const code = row[0];
-        const new_price = row[1];
-
-        fileObj[code] = parseFloat(new_price);
-      });
-
-      setFileContents(fileObj);
-      setAppStatus(APP_STATUS.FILE_READY);
-    } catch (error) {
-      setAppStatus(APP_STATUS.FILE_ERROR);
-    }
-  }
 
   function handleValidation() {
     setAppStatus(APP_STATUS.VALIDATING);
@@ -118,10 +64,9 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <h1>SHOPPER</h1>
-      <input
-        type="file"
-        accept=".csv"
-        onChange={(event) => handleFileLoading(event.target.files[0])}
+      <FilePicker
+        updateStatus={(newStatus) => setAppStatus(newStatus)}
+        updateFileContents={(fileContents) => setFileContents(fileContents)}
       />
       {appStatus === APP_STATUS.IDLE && <div>Selecione um arquivo CSV.</div>}
       {appStatus === APP_STATUS.READING_FILE && (
@@ -155,7 +100,14 @@ export default function Home() {
   );
 }
 
-function isNumeric(str) {
-  if (typeof str != "string") return false;
-  return !isNaN(str) && !isNaN(parseFloat(str));
-}
+
+
+/*
+
+
+- Extract CardList and Cards 
+- Extract Status Panel
+- Extract Buttons
+- Extract isNumeric as helper function
+
+*/
