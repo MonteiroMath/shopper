@@ -8,11 +8,11 @@ import APP_STATUS from "@/app_status";
 import FilePicker from "@/FilePicker/FilePicker";
 import StatusMsgPanel from "@/StatusMsgPanel/StatusMsgPanel";
 import CardList from "@/CardList/CardList";
+import ButtonBar from "@/ButtonBar/ButtonBar";
 
 export default function Home() {
   const [fileContents, setFileContents] = useState({});
   const [products, setProducts] = useState([]);
-  const [allValid, setAllValid] = useState(false);
 
   const [appStatus, setAppStatus] = useState(APP_STATUS.IDLE);
 
@@ -22,8 +22,6 @@ export default function Home() {
     api.validate({ new_prices: fileContents }).then(({ products }) => {
       setAppStatus(APP_STATUS.VALIDATION_READY);
       setProducts(products);
-
-      setAllValid(!products.some((product) => !product.valid));
     });
   }
 
@@ -59,29 +57,11 @@ export default function Home() {
       {appStatus === APP_STATUS.VALIDATION_READY && (
         <CardList products={products} />
       )}
-      <div>
-        <button
-          disabled={appStatus !== APP_STATUS.FILE_READY}
-          onClick={handleValidation}
-        >
-          Validar
-        </button>
-        <button disabled={!allValid} onClick={handleUpdate}>
-          Atualizar
-        </button>
-      </div>
+      <ButtonBar
+        status={appStatus}
+        handleValidation={handleValidation}
+        handleUpdate={handleUpdate}
+      />
     </main>
   );
 }
-
-
-
-/*
-
-
-- Extract CardList and Cards 
-
-- Extract Buttons
-
-
-*/
