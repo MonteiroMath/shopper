@@ -25,7 +25,7 @@ export default function ProductCard({ product }) {
           {product.current_price || "~"}
         </Card.Text>
         <Card.Text>
-          <span className="fw-bold">Preço atual: </span>
+          <span className="fw-bold">Novo preço: </span>
           {product.new_price ? product.new_price.toFixed(2) : "~"}
         </Card.Text>
       </Card.Body>

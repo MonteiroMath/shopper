@@ -22,7 +22,7 @@ router.post("/validate", function (req, res, next) {
           name: product.name,
           current_price: product.sales_price,
           new_price: newPrice,
-          new_cost_price: this.newCostPrice,
+          new_cost_price: product.new_cost_price,
           validation_errors: validation_result,
           valid: validation_result.length === 0,
         };

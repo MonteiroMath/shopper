@@ -23,8 +23,6 @@ export default function FilePicker({ updateStatus, updateFileContents }) {
   function processFile(fileContent) {
     const fileObj = {};
 
-    console.log(fileContent);
-
     try {
       fileContent.forEach((row, index) => {
         if (index === 0) return;
