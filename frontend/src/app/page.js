@@ -6,6 +6,7 @@ import api from "@/api/api";
 import APP_STATUS from "@/app_status";
 
 import FilePicker from "@/FilePicker/FilePicker";
+import StatusMsgPanel from "@/StatusMsgPanel/StatusMsgPanel";
 
 export default function Home() {
   const [fileContents, setFileContents] = useState({});
@@ -68,22 +69,8 @@ export default function Home() {
         updateStatus={(newStatus) => setAppStatus(newStatus)}
         updateFileContents={(fileContents) => setFileContents(fileContents)}
       />
-      {appStatus === APP_STATUS.IDLE && <div>Selecione um arquivo CSV.</div>}
-      {appStatus === APP_STATUS.READING_FILE && (
-        <div>Aguarde enquanto processamos o arquivo.</div>
-      )}
-      {appStatus === APP_STATUS.FILE_ERROR && (
-        <div>
-          Foi encontrado um erro. Certifique-se de que o arquivo adere às regras
-          estabelecidas.
-        </div>
-      )}
-      {appStatus === APP_STATUS.FILE_READY && (
-        <div>O arquivo está pronto. Clique em validar.</div>
-      )}
-      {appStatus === APP_STATUS.VALIDATING && (
-        <div>Aguarde enquanto validamos os preços informados.</div>
-      )}
+      <StatusMsgPanel status={appStatus} />
+
       {appStatus === APP_STATUS.VALIDATION_READY && <div>{productCards}</div>}
       <div>
         <button
@@ -100,14 +87,12 @@ export default function Home() {
   );
 }
 
-
-
 /*
 
 
 - Extract CardList and Cards 
-- Extract Status Panel
+
 - Extract Buttons
-- Extract isNumeric as helper function
+
 
 */
