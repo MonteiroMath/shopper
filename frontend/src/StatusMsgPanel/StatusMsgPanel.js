@@ -1,4 +1,5 @@
 import APP_STATUS from "@/app_status";
+import styles from "./StatusMsgPanel.module.css";
 
 export default function StatusMsgPanel({ status }) {
   const MESSAGES = {
@@ -14,5 +15,7 @@ export default function StatusMsgPanel({ status }) {
     [APP_STATUS.UPDATING]: "Aguarde enquanto atualizamos os preços",
   };
 
-  return MESSAGES[status] ? <div>{MESSAGES[status]}</div> : null;
+  return MESSAGES[status] ? (
+    <div className={styles.container}>{MESSAGES[status]}</div>
+  ) : null;
 }
