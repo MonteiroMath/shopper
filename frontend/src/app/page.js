@@ -7,6 +7,7 @@ import APP_STATUS from "@/app_status";
 
 import FilePicker from "@/FilePicker/FilePicker";
 import StatusMsgPanel from "@/StatusMsgPanel/StatusMsgPanel";
+import CardList from "@/CardList/CardList";
 
 export default function Home() {
   const [fileContents, setFileContents] = useState({});
@@ -46,22 +47,6 @@ export default function Home() {
     });
   }
 
-  const productCards = products.map((product, key) => {
-    const errors = product.validation_errors.map((error, key) => {
-      return <div key={`error-${key}`}>{error}</div>;
-    });
-
-    return (
-      <div key={key}>
-        <div>{product.id}</div>
-        <div>{product.name}</div>
-        <div>{product.current_price}</div>
-        <div>{product.new_price}</div>
-        <div>{errors}</div>
-      </div>
-    );
-  });
-
   return (
     <main className={styles.main}>
       <h1>SHOPPER</h1>
@@ -71,7 +56,9 @@ export default function Home() {
       />
       <StatusMsgPanel status={appStatus} />
 
-      {appStatus === APP_STATUS.VALIDATION_READY && <div>{productCards}</div>}
+      {appStatus === APP_STATUS.VALIDATION_READY && (
+        <CardList products={products} />
+      )}
       <div>
         <button
           disabled={appStatus !== APP_STATUS.FILE_READY}
@@ -86,6 +73,8 @@ export default function Home() {
     </main>
   );
 }
+
+
 
 /*
 
