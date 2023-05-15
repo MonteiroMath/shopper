@@ -1,4 +1,5 @@
 "use client";
+import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./page.module.css";
 import { useState } from "react";
 
@@ -38,7 +39,7 @@ export default function Home() {
       }),
     };
 
-    api.update(queryBody).then((result) => {
+    api.update(queryBody).then(() => {
       setAppStatus(APP_STATUS.DONE);
       window.alert("Os preços foram atualizados.");
       window.location.reload();

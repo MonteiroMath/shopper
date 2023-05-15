@@ -1,4 +1,5 @@
 import APP_STATUS from "@/app_status";
+import Form from "react-bootstrap/Form";
 
 export default function FilePicker({ updateStatus, updateFileContents }) {
   function handleFileLoading(file) {
@@ -52,7 +53,7 @@ export default function FilePicker({ updateStatus, updateFileContents }) {
 
   return (
     <div>
-      <input
+      <Form.Control
         type="file"
         accept=".csv"
         onChange={(event) => handleFileLoading(event.target.files[0])}

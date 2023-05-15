@@ -48,8 +48,6 @@ router.post("/validate", function (req, res, next) {
 router.put("/update", function (req, res, next) {
   const { new_prices } = req.body;
 
-  console.log(new_prices);
-
   if (!new_prices) {
     throw new Error(
       "É necessário encaminhar uma lista de preços para validação."
@@ -59,7 +57,6 @@ router.put("/update", function (req, res, next) {
   const updatePromises = [];
 
   for (const product of new_prices) {
-    console.log(product);
     const updatePromise = Product.setData(
       product.id,
       product.new_price,

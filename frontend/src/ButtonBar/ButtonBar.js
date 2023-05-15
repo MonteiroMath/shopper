@@ -1,20 +1,21 @@
 import APP_STATUS from "@/app_status";
+import Button from 'react-bootstrap/Button';
 
 export default function ButtonBar({ status, handleValidation, handleUpdate }) {
   return (
     <div>
-      <button
+      <Button
         disabled={status !== APP_STATUS.FILE_READY}
         onClick={handleValidation}
       >
         Validar
-      </button>
-      <button
+      </Button>
+      <Button
         disabled={status !== APP_STATUS.VALIDATION_READY}
         onClick={handleUpdate}
       >
         Atualizar
-      </button>
+      </Button>
     </div>
   );
 }
