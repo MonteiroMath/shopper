@@ -10,6 +10,8 @@ export default function StatusMsgPanel({ status }) {
     [APP_STATUS.FILE_READY]: "O arquivo está pronto. Clique em validar.",
     [APP_STATUS.FILE_READY]: "O arquivo está pronto. Clique em validar.",
     [APP_STATUS.VALIDATING]: "Aguarde enquanto validamos os preços informados.",
+    [APP_STATUS.VALIDATION_ERRORS]:
+      "Foram encontrados erros no arquivo de preços.",
     [APP_STATUS.VALIDATION_READY]:
       "Os preços foram validados. Clique em atualizar.",
     [APP_STATUS.UPDATING]: "Aguarde enquanto atualizamos os preços",

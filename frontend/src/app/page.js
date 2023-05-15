@@ -21,7 +21,11 @@ export default function Home() {
     setAppStatus(APP_STATUS.VALIDATING);
 
     api.validate({ new_prices: fileContents }).then(({ products }) => {
-      setAppStatus(APP_STATUS.VALIDATION_READY);
+      const allValid = !products.some((product) => !product.valid);
+
+      allValid
+        ? setAppStatus(APP_STATUS.VALIDATION_READY)
+        : setAppStatus(APP_STATUS.VALIDATION_ERRORS);
       setProducts(products);
     });
   }
@@ -55,7 +59,8 @@ export default function Home() {
       />
       <StatusMsgPanel status={appStatus} />
 
-      {appStatus === APP_STATUS.VALIDATION_READY && (
+      {(appStatus === APP_STATUS.VALIDATION_READY ||
+        appStatus === APP_STATUS.VALIDATION_ERRORS) && (
         <CardList products={products} />
       )}
       <ButtonBar
